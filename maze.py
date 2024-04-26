@@ -29,7 +29,18 @@ class StackFrontier():
             return node
 
 
-class QueueFrontier(StackFrontier):
+class QueueFrontier():
+    def __init__(self):
+        self.frontier = []
+
+    def add(self, node):
+        self.frontier.append(node)
+
+    def contains_state(self, state):
+        return any(node.state == state for node in self.frontier)
+
+    def empty(self):
+        return len(self.frontier) == 0
 
     def remove(self):
         if self.empty():
@@ -100,7 +111,7 @@ class Maze():
         print()
 
 
-    def neighbors(self, state):
+    def move(self, state):
         row, col = state
         candidates = [
             ("up", (row - 1, col)),
@@ -123,7 +134,7 @@ class Maze():
 
         # Initialize frontier to just the starting position
         start = Node(state=self.start, parent=None, action=None)
-        frontier = StackFrontier()
+        frontier = QueueFrontier()
         frontier.add(start)
 
         # Initialize an empty explored set
@@ -157,7 +168,7 @@ class Maze():
             self.explored.add(node.state)
 
             # Add neighbors to frontier
-            for action, state in self.neighbors(node.state):
+            for action, state in self.move(node.state):
                 if not frontier.contains_state(state) and state not in self.explored:
                     child = Node(state=state, parent=node, action=action)
                     frontier.add(child)
